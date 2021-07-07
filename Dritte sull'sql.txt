@@ -268,5 +268,19 @@ create TABLE gruppi_lavoro(
     CONSTRAINT fk_gruppilavoro_iddip FOREIGN KEY(id_dipendente) REFERENCES dipendenti(id),
     CONSTRAINT fk_gruppilavoro_idpj FOREIGN KEY(id_progetto) REFERENCES progetti(id)
 )
+-------------------------------------------------------------------------------------------
+Creazione di una vista:
 
+/*vogliamo vedere all'unisono i dati della tab ruoli e
+quelli della tab account*/
+CREATE VIEW v_account_ruolo as
+SELECT account.id, account.username, account.email, ruoli.ruolo
+FROM
+account JOIN ruoli
+ON
+account.id_ruolo=ruoli.id
+NB:con la clausola join posso sfruttare una relazione tra tabelle per ottenere
+come risultato una tabella ibrida (avendo questa i campi di più tabelle)
+NB2: una vista non è manipolabile (non posso inserire, modificare,cancellare dati in una
+vista in quanto questa è di sola lettura)
 
