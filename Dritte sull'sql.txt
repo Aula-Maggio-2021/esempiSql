@@ -241,4 +241,32 @@ VALUES
 nb:ogni riga di dipendente la associamo ad una di account attraverso il valore
 dato al campo FK
 
+Dipendenti-Progetti N-N (ManyToMany)
+Questa relazione possiamo ottenerla solo attraverso una tabella di cross (anche detta
+tabella d'appoggio o normalizzata) in quanto sarà l'unica ad avere le chiavi esterne
+utili alla relazione molti a molti.
+
+tab progetti
+id         progetto             
+1          Java
+2          Python
+3          C#
+
+CREATE TABLE progetti(
+
+	id int PRIMARY key AUTO_INCREMENT,
+    progetto varchar(50) not null UNIQUE 
+    
+);
+
+/*creo la tabella di cross per consentire la relazione dipendenti-progetti*/
+create TABLE gruppi_lavoro(
+	id int PRIMARY key AUTO_INCREMENT,
+    nome_gruppo varchar(30) UNIQUE not null,
+	id_dipendente int,
+    id_progetto int,
+    CONSTRAINT fk_gruppilavoro_iddip FOREIGN KEY(id_dipendente) REFERENCES dipendenti(id),
+    CONSTRAINT fk_gruppilavoro_idpj FOREIGN KEY(id_progetto) REFERENCES progetti(id)
+)
+
 
