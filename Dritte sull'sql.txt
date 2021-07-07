@@ -1,0 +1,244 @@
+SQL
+(Structure Query Language)
+
+0)DDL (Data Definition Language)
+nb:i comandi ddl definiscono l'architettura del database
+(d'ora in avanti DB), ovvero, possiamo creare il db stesso con 
+le sue tabelle oltre che modificare o rimuovere quest'ultime
+I comandi DDL sono i seguenti:
+
+-Create -> crea il db, crea le tabelle (con colonne), crea le viste (view sql)
+-Alter -> modifica il db, modifica le tabelle, modifica le colonne
+-Drop -> elimina il db, elimina le tabelle, rimuove le colonne
+
+CRUD con il db->DML e DQL
+1)DML (Data Manipolation Language):
+
+-insert -> creo le righe (in seguito all'inserimento dei dati)
+-update -> modifico la/le riga/righe modificando i dati
+-delete -> rimuovo la/le riga/righe
+nb:manipolazione vuole dire lavorare strettamente con i dati
+
+2)DQL (Data Query Language)
+-lettura (della singola riga o di più righe)
+nb:query=interrogazione/lettura dei dati
+L'unico comando (ma anche il più complesso) è il comando: 
+select -> una o più righe attraverso dei criteri che noi imponiamo
+------------------------------------------------------------------------------------
+DBMS: DataBase Management System-> è il manageriale che ci concente
+l'utilizzo dei comandi sql (ddl, dml e dql)
+------------------------------------------------------------------------------------
+Esempi pratici di comandi ddl:
+
+/*creo un ecosistema per le tabelle*/
+CREATE DATABASE myAzienda
+
+create TABLE dipendenti(
+    id int primary key AUTO_INCREMENT, /*primary key=unique*/
+    nome varchar(20) not null,
+    cognome varchar(30) not null,
+    eta int(2),
+    codice_fiscale char(16) not null unique,
+    citta varchar(20) not null
+)
+
+CREATE TABLE account(
+    id int PRIMARY KEY AUTO_INCREMENT,
+    username varchar(30) not null UNIQUE,
+    password varchar(30) not null,
+    email varchar(30) not null UNIQUE
+)
+
+/*
+Aggiungo una colonna alla tabella
+Aggiungere una colonna equivale a modificare
+l'architettura della tabella
+*/
+alter TABLE dipendenti
+add nazione varchar(20) not null
+
+/*
+comando ddl ibrido (c'è sia l'alter che il drop nello stesso comando)
+*/
+alter TABLE dipendenti drop hobby //cancelliamo il campo "hobby" 
+ 
+drop TABLE dipendenti
+--------------------------------------------------------------------
+Esempi pratici comandi DML:
+
+/*inserimento dei dati*/
+insert into dipendenti
+(nome,cognome,codice_fiscale,citta,nazione)
+VALUES
+('mirko','verdi','mrkvdi789','roma','italia')
+
+/*inserimento consecutivo di 3 dipendenti*/
+insert into dipendenti
+(nome,cognome,codice_fiscale,citta,nazione)
+VALUES
+('arcibaldo','della marenna','acbdlm123','napoli','italia'),
+('baldo','della marenna','blddlm478','napoli','italia'),
+('ubaldo','della transenna','udotnna146','torino','italia')
+
+/*modifico tutte le righe*/
+update dipendenti set eta=20
+
+/*modifico una riga specifica usando la clausola "where"*/
+update dipendenti set eta=25 where id=3;
+
+/*definisco il dominio delle righe da modificare*/
+update dipendenti set eta=35 where id>=4 and id<=7
+
+/*
+decimal(6,2)-> 6 cifre totali di cui 2 dopo la virgola
+Es. 1450.62
+*/
+alter TABLE dipendenti add stipendio decimal(6,2) 
+
+/*rimuovo tutti i dipendenti*/
+DELETE from dipendenti
+
+/*rimuovo dipendenti specifici*/
+DELETE from dipendenti where id=1;
+DELETE from dipendenti where id=3;
+
+--------------------------------------------------------------------
+Esempi pratici comandi DQL:
+
+/*
+* equivale a "prendi tutti i campi/colonne"
+*/
+SELECT * from dipendenti;
+
+SELECT id, nome, cognome from dipendenti;
+
+SELECT id, nome, codice_fiscale from dipendenti;
+
+SELECT codice_fiscale, nome, cognome, eta from dipendenti;
+
+SELECT * from dipendenti where eta<30
+
+SELECT * from dipendenti where eta>17 and eta<=20
+
+/*
+Funzioni di aggregazione:
+1)avg
+2)max/min
+3)sum
+4)count
+nb: vanno sempre utilizzate o tra i campi della select o
+per fare una subquery con la clausola "where"
+*/
+/*Vogliamo l'età massima*/
+SELECT max(eta) from dipendenti
+
+SELECT * from dipendenti where eta = (SELECT max(eta) from dipendenti)
+
+/*as per definire un alias "per rinominare cose"*/
+SELECT max(eta) as eta_massima from dipendenti
+
+SELECT sum(stipendio) as tot_stipendi from dipendenti
+
+/*Conto il numero di righe nella tabella*/
+select count(*) as n_dipendenti from dipendenti;
+
+select count(*) as n_dip_senior from dipendenti where stipendio>1000 and stipendio<=3000.99;
+
+select count(*) as n_dip_junior from dipendenti where eta=18
+
+SELECT * from dipendenti ORDER by eta //è asc (ordine crescente) di default
+
+SELECT * from dipendenti ORDER by eta asc
+
+SELECT * from dipendenti ORDER by eta desc
+
+/*
+con la clausola group by posso usare le funzioni di aggregazione
+rispetto il valore di un campo;
+es. posso contare quanti dipendenti ho per singola nazione,
+oppure, posso conoscere lo stipendio medio per nazione, ecc ecc.
+*/
+SELECT nazione, count(*) from dipendenti GROUP by nazione;
+
+SELECT nazione, avg(stipendio) from dipendenti GROUP by nazione;
+
+SELECT nazione, avg(eta) from dipendenti GROUP by nazione;
+
+SELECT nazione, max(eta) from dipendenti GROUP by nazione;
+
+SELECT nazione, sum(stipendio) from dipendenti GROUP by nazione;
+
+
+--------------------------------------------------------------------
+
+Relazioni tra tabelle:
+
+Ruoli-Account 1-N
+Account-Ruoli N-1
+nb: la chiave esterna (fk) va sempre data alla tabella che rappresenta 
+il molti (quindi ad account nell'esempio)
+
+tab ruoli
+id	ruolo
+1	admin
+2	mod
+3	smod
+4	guest
+5	banned
+
+/*
+Corrispondenza biunivoca che prevede che un account non
+possa essere associato a più dipendenti e viceversa;
+ad un account corrisponde un dipendente, ad un dipendente
+un account
+*/
+Account-Dipendenti -> relazione OneToOne (1-1)
+Per definire una relazione abbiamo bisogno di 2 cose:
+-una chiave primaria (PK)
+-una chiave esterna anche detta Foreign Key (FK) 
+Una fk punta sempre la pk, ovvero, il valore della fk viene
+preso dalla pk (mirko definisce la fk come "la chiave parassita");
+in questo modo collego la riga con la fk alla riga con la pk
+
+/*
+Definiamo un vincolo di integrità col seguente comando:
+constraint fk_dipendenti_idaccount foreign key(id_account)
+references account(id)
+Con una relazione 1-1 possiamo scegliere a quale delle due dare la fk (nell'esempio
+l'abbiamo data alla tabella "dipendenti")
+nb: SOLO col constraint battezziamo un campo come fk!!!
+*/
+
+Tab Account
+id(pk)	username		email				id_ruolo(fk)
+1	peppino_champagne	peppe@gmail.com			5
+2	magicfabiano		faby.thebeast@gmail.com		1
+3 	danny_boy		d.boy@gmail.com			2
+17 	vittoria_girl		v.girl@gmail.com		5
+
+nb:in questo caso due utenti condividono lo stesso ruolo, quindi molti
+utenti sono bannati
+
+Tab Dipendenti
+id(pk)	nome	 	cognome		id_account(fk)
+1	fabio	 	rossi		1
+2	fabiano	 	asprone		2
+3	daniele		bianchi		3
+17	vittoria	neri		17
+
+insert into account (username,password,email) 
+VALUES 
+('peppino_champagne','1234','peppe@gmail.com'),
+('magicfabiano','1234','faby.thebeast@gmail.com'),
+('danny_boy','1234','d.boy@gmail.com');
+
+insert into dipendenti (nome,cognome,codice_fiscale,nazione,id_account)
+VALUES
+('fabio','rossi','fabros','italia',1),
+('fabiano','asprone','fabasp','italia',2),
+('daniele','bianchi','danbia','belgio',3)
+
+nb:ogni riga di dipendente la associamo ad una di account attraverso il valore
+dato al campo FK
+
+
