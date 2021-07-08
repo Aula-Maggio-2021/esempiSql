@@ -281,6 +281,6 @@ ON
 account.id_ruolo=ruoli.id
 NB:con la clausola join posso sfruttare una relazione tra tabelle per ottenere
 come risultato una tabella ibrida (avendo questa i campi di più tabelle)
-NB2: una vista non è manipolabile (non posso inserire, modificare,cancellare dati in una
-vista in quanto questa è di sola lettura)
+NB2: una vista non è manipolabile (non posso inserire,cancellare dati in una
+vista in quanto nasce per la sola lettura, ma è comunque possibile modificarne i contenuti)
 
