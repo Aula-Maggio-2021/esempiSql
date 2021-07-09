@@ -172,7 +172,7 @@ SELECT nazione, sum(stipendio) from dipendenti GROUP by nazione;
 --------------------------------------------------------------------
 
 Relazioni tra tabelle:
-
+Creiamo le relazioni per evitare le ridondanze
 Ruoli-Account 1-N
 Account-Ruoli N-1
 nb: la chiave esterna (fk) va sempre data alla tabella che rappresenta 
